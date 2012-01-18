@@ -248,7 +248,8 @@ static void enable_device(spi_dev *dev,
                           spi_cfg_flag endianness,
                           spi_mode mode) {
     spi_baud_rate baud = determine_baud_rate(dev, freq);
-    uint32 cfg_flags = (endianness | SPI_DFF_8_BIT | SPI_SW_SLAVE |
+    uint32 cfg_flags = (endianness | SPI_DFF_8_BIT |
+                        (as_master ? SPI_SW_SLAVE : 0) |
                         (as_master ? SPI_SOFT_SS : 0));
 
     spi_init(dev);
