@@ -50,7 +50,7 @@ extern "C" {
 /** CAN register map type. */
 typedef struct can_reg_map {
     __io uint32 MCR;            /**< Master control register */
-    __io uint32 CSR;            /**< Master status register */
+    __io uint32 MSR;            /**< Master status register */
     __io uint32 TSR;            /**< Transmit status register */
     __io uint32 RF0R;           /**< Receive FIFO 0 register */
     __io uint32 RF1R;           /**< Receive FIFO 1 register */
@@ -154,7 +154,7 @@ typedef struct can_reg_map {
 #define CAN_MSR_SLAKI_BIT       4
 #define CAN_MSR_WKUI_BIT        3
 #define CAN_MSR_ERRI_BIT        2
-#define CAN_MSR_SLAKI_BIT       1
+#define CAN_MSR_SLAK_BIT        1
 #define CAN_MSR_INAK_BIT        0
 
 #define CAN_MSR_RX              BIT(CAN_MSR_RX_BIT)
@@ -164,7 +164,7 @@ typedef struct can_reg_map {
 #define CAN_MSR_SLAKI           BIT(CAN_MSR_SLAKI_BIT)
 #define CAN_MSR_WKUI            BIT(CAN_MSR_WKUI_BIT)
 #define CAN_MSR_ERRI            BIT(CAN_MSR_ERRI_BIT)
-#define CAN_MSR_SLAKI           BIT(CAN_MSR_SLAKI_BIT)
+#define CAN_MSR_SLAK            BIT(CAN_MSR_SLAK_BIT)
 #define CAN_MSR_INAK            BIT(CAN_MSR_INAK_BIT)
 
 /* Transmit status register */
@@ -314,7 +314,7 @@ typedef struct can_reg_map {
 #define CAN_BTR_LBKM_BIT        30
 
 #define CAN_BTR_SILM            BIT(CAN_BTR_SILM_BIT)
-#define CAN_BTR_LBKM_BIT        BIT(CAN_BTR_LBKM_BIT)
+#define CAN_BTR_LBKM            BIT(CAN_BTR_LBKM_BIT)
 #define CAN_BTR_SJW             (0x3 << 24)
 #define CAN_BTR_TS2             (0x7 << 20)
 #define CAN_BTR_TS1             (0x7 << 16)
@@ -330,7 +330,7 @@ typedef struct can_reg_map {
 #define CAN_TIxR_EXID           (0xffffffff - 0x7)
 #define CAN_TIxR_IDE            BIT(CAN_TIxR_IDE_BIT)
 #define CAN_TIxR_RTR            BIT(CAN_TIxR_RTR_BIT)
-#define CAN_TIxR_TXRQ_BIT       BIT(CAN_TIxR_TXRQ_BIT)
+#define CAN_TIxR_TXRQ           BIT(CAN_TIxR_TXRQ_BIT)
 
 /* Mailbox data length control and time stamp registers */
 
