@@ -34,6 +34,7 @@
 #define _CAN_H_
 
 #include "libmaple_types.h"
+#include "bitband.h"
 #include "rcc.h"
 #include "nvic.h"
 #include "gpio.h"
@@ -57,34 +58,44 @@ typedef struct can_reg_map {
     __io uint32 IER;            /**< Interrupt enable register */
     __io uint32 ESR;            /**< Error status register */
     __io uint32 BTR;            /**< Bit timing register */
+    
+    const uint8 RESERVED1[352]; /**< Reserved. */
 
     __io uint32 TI0R;           /**< TX mailbox identifier register */
-    __io uint32 TI1R;           /**< TX mailbox identifier register */
-    __io uint32 TI2R;           /**< TX mailbox identifier register */
     __io uint32 TDT0R;          /**< Mailbox data length control and time stamp register */
-    __io uint32 TDT1R;          /**< Mailbox data length control and time stamp register */
-    __io uint32 TDT2R;          /**< Mailbox data length control and time stamp register */
     __io uint32 TDL0R;          /**< Mailbox data low register */
-    __io uint32 TDL1R;          /**< Mailbox data low register */
-    __io uint32 TDL2R;          /**< Mailbox data low register */
     __io uint32 TDH0R;          /**< Mailbox data high register */
+
+    __io uint32 TI1R;           /**< TX mailbox identifier register */
+    __io uint32 TDT1R;          /**< Mailbox data length control and time stamp register */
+    __io uint32 TDL1R;          /**< Mailbox data low register */
     __io uint32 TDH1R;          /**< Mailbox data high register */
+
+    __io uint32 TI2R;           /**< TX mailbox identifier register */
+    __io uint32 TDT2R;          /**< Mailbox data length control and time stamp register */
+    __io uint32 TDL2R;          /**< Mailbox data low register */
     __io uint32 TDH2R;          /**< Mailbox data high register */
 
     __io uint32 RI0R;           /**< Receive FIFO mailbox identifier register */
-    __io uint32 RI1R;           /**< Receive FIFO mailbox identifier register */
     __io uint32 RDT0R;          /**< Receive FIFO mailbox data length control and time stamp register */
-    __io uint32 RDT1R;          /**< Receive FIFO mailbox data length control and time stamp register */
     __io uint32 RDL0R;          /**< Receive FIFO mailbox data low register */
-    __io uint32 RDL1R;          /**< Receive FIFO mailbox data low register */
     __io uint32 RDH0R;          /**< Receive FIFO mailbox data high register */
+
+    __io uint32 RI1R;           /**< Receive FIFO mailbox identifier register */
+    __io uint32 RDT1R;          /**< Receive FIFO mailbox data length control and time stamp register */
+    __io uint32 RDL1R;          /**< Receive FIFO mailbox data low register */
     __io uint32 RDH1R;          /**< Receive FIFO mailbox data high register */
+
+    const uint8 RESERVED2[48];  /**< Reserved. */
 
     __io uint32 FMR;            /**< Filter master register */
     __io uint32 FM1R;           /**< Filter mode register */
     __io uint32 FS1R;           /**< Filter scale register */
     __io uint32 FFA1R;          /**< Filter FIFO assignment register */
     __io uint32 FA1R;           /**< Filter activation register */
+
+    const uint32 RESERVED3;     /**< Reserved. */
+    const uint8 RESERVED4[28];  /**< Reserved. */
 
     __io uint32 F0R1;           /**< Filter bank 0 register 1 */
     __io uint32 F0R2;           /**< Filter bank 0 register 2 */
@@ -520,6 +531,35 @@ typedef struct can_reg_map {
 #define CAN_FA1R_FACT0          BIT(CAN_FA1R_FACT0_BIT)
 
 /*
+ * Enumerations
+ */
+
+typedef enum {
+    CAN_TX_TIMESTAMP =  CAN_MCR_TTCM,
+    CAN_AUTO_RECOVER =  CAN_MCR_ABOM,
+    CAN_AUTO_WAKE =     CAN_MCR_AWUM,
+    CAN_NO_RETRANSMIT = CAN_MCR_NART,
+    CAN_OVERRUN_LOCK =  CAN_MCR_RFLM,
+    CAN_TX_FIFO =       CAN_MCR_TXFP
+} can_options;
+
+typedef enum {
+    CAN_MODE_SILENT = CAN_BTR_SILM,
+    CAN_MODE_LOOPBACK = CAN_BTR_LBKM
+} can_modes;
+
+typedef enum {
+    CAN_TX_MAILBOX_1 = 1,
+    CAN_TX_MAILBOX_2 = 2,
+    CAN_TX_MAILBOX_3 = 3
+} can_tx_mailbox;
+
+typedef enum {
+    CAN_RX_MAILBOX_1 = 0,
+    CAN_RX_MAILBOX_2 = 1,
+} can_rx_mailbox;
+
+/*
  * Devices
  */
 
@@ -527,15 +567,133 @@ typedef struct can_reg_map {
 typedef struct can_dev {
     can_reg_map *regs;          /**< Register map */
     rcc_clk_id clk_id;          /**< RCC clock information */
-    nvic_irq_num irq_num;       /**< NVIC interrupt number */
+    nvic_irq_num tx_irq_num;    /**< NVIC interrupt number for CAN TX events */
+    nvic_irq_num rx_irq_num;    /**< NVIC interrupt number for CAN RX events */
+    nvic_irq_num sc_irq_num;    /**< NVIC interrupt number for CAN Status Change Events */
+    void (*tx_handler)(void);   /**< User-specified TX interrupt handler */
+    void (*rx_handler)(void);   /**< User-specified RX interrupt handler */
+    void (*sc_handler)(void);   /**< User-specified Status Change interrupt handler */
+    uint8 enabled;              /**< Flag indicating if CAN interrupts should be used */
 } can_dev;
+
+#define CAN_MAILBOX_NREGS 4
+typedef struct can_mailbox_reg_map {
+    __io uint32 IR;            /**< Mailbox identifier register */
+    __io uint32 DTR;           /**< Mailbox data length control and time stamp register */
+    __io uint32 DLR;           /**< Mailbox data low register */
+    __io uint32 DHR;           /**< Mailbox data high register */
+} can_mailbox_reg_map;
+
+typedef enum {
+    CAN_INT_TX,
+    CAN_INT_RX,
+    CAN_INT_SC
+} can_interrupt_type;
 
 /*
  * CAN Convenience functions
  */
 
 void can_init(can_dev *dev);
+void can_tx_irq_handler(void);
+void can_rx_irq_handler(void);
+void can_attach_interrupt(can_dev *dev, can_interrupt_type interrupt_type, void (*handler)(void));
+void can_detach_interrupt(can_dev *dev, can_interrupt_type interrupt_type);
 
+static inline can_mailbox_reg_map* can_tx_mailbox_regs(can_dev *dev, can_tx_mailbox mailbox) {
+    __io uint32 *ti0r = &dev->regs->TI0R;
+    return (can_mailbox_reg_map*)(ti0r + CAN_MAILBOX_NREGS * (mailbox - 1));
+}
+
+static inline can_mailbox_reg_map* can_rx_mailbox_regs(can_dev *dev, can_rx_mailbox mailbox) {
+    __io uint32 *ri0r = &dev->regs->RI0R;
+    return (can_mailbox_reg_map*)(ri0r + CAN_MAILBOX_NREGS * (mailbox - 1));
+}
+
+//static inline can_tx_mess
+
+void can_reconfigure(can_dev *dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config);
+uint8 can_tx_mailbox_free(can_dev *dev, can_tx_mailbox mailbox);
+
+/**
+ * @brief Returns true if the CAN peripheral is in sleep mode
+ * 
+ * Returns true if the CAN peripheral is currently in sleep mode.
+ */
+static inline uint8 can_is_asleep(can_dev *dev) {
+    return bb_peri_get_bit(&dev->regs->MSR, CAN_MSR_SLAK_BIT) != 0;
+}
+
+/**
+ * @brief Returns true if the CAN peripheral is in initialization mode
+ * 
+ * Returns true if the CAN peripheral is currently in initialization mode.
+ */
+static inline uint8 can_is_initializing(can_dev *dev) {
+    return bb_peri_get_bit(&dev->regs->MSR, CAN_MSR_INAK_BIT) != 0;
+}
+
+/**
+ * @brief Returns true if the CAN peripheral is in normal mode
+ * 
+ * Returns true if the CAN peripheral is currently in normal mode
+ */
+static inline uint8 can_is_normal(can_dev *dev) {
+    return (dev->regs->MSR & (CAN_MSR_SLAK | CAN_MSR_INAK)) == 0;
+}
+
+/**
+ * @brief Wake the CAN peripheral from sleep mode
+ *
+ * Wakes up the CAN peripheral from sleep mode by clearing the sleep
+ * bit in the master control register.  On reset, the CAN peripheral
+ * starts in sleep mode.
+ *
+ * @param dev CAN peripheral to wake
+ */
+static inline void can_leave_sleep(can_dev *dev) {
+    bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_SLEEP_BIT, 0);
+}
+
+/**
+ * @brief Signal the CAN peripheral to enter sleep mode
+ *
+ * Signals the CAN peripheral to enter sleep mode by setting the sleep
+ * bit in the master control register.  Does not wait for the peripheral
+ * to actually go to sleep.
+ *
+ * @param dev CAN peripheral to put to sleep
+ */
+static inline void can_enter_sleep(can_dev *dev) {
+    bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_SLEEP_BIT, 1);
+}
+
+/**
+ * @brief Put the CAN peripheral into initialization mode
+ *
+ * Signals the CAN peripheral to enter initialization mode.  Note
+ * that if the peripheral is in sleep mode, it must be woken before
+ * it can enter initialization mode.  Certain filter and general
+ * configuration options can only be set during initialization.
+ *
+ * @param dev CAN peripheral to prepare for configuration
+ */
+static inline void can_enter_initialization(can_dev *dev) {
+    bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_INRQ_BIT, 1);
+    return;
+}
+
+/**
+ * @brief Leave initialization mode and begin normal operation
+ *
+ * Signals the CAN peripheral to leave initialization mode.
+ * Note that messages can only be sent and received in normal mode.
+ * @param dev CAN peripheral to leave initialization mode
+ */
+static inline void can_leave_initialization(can_dev *dev) {
+    bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_INRQ_BIT, 0);
+    return;
+}
 
 extern can_dev *CAN;
 

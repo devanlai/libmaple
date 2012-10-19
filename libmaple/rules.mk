@@ -14,6 +14,7 @@ CFLAGS_$(d) = -I$(d) $(LIBMAPLE_INCLUDES) -Wall -Werror
 # Local rules and targets
 cSRCS_$(d) := adc.c                    \
               bkp.c                    \
+              can.c                    \
               dac.c                    \
               dma.c                    \
               exti.c                   \
