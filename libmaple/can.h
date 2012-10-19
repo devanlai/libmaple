@@ -25,27 +25,28 @@
  *****************************************************************************/
 
 /**
- * @file can.h
+ * @file libmaple/include/libmaple/can.h
  * @author Devan Lai <devan.lai@gmail.com>
- * @brief Controller Area Network (CAN) support.
+ * @brief Controller Area Network (CAN) header.
  */
 
-#ifndef _CAN_H_
-#define _CAN_H_
-
-#include "libmaple_types.h"
-#include "bitband.h"
-#include "rcc.h"
-#include "nvic.h"
-#include "gpio.h"
-#include "util.h"
+#ifndef _LIBMAPLE_CAN_H_
+#define _LIBMAPLE_CAN_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include <libmaple/bitband.h>
+#include <libmaple/rcc.h>
+#include <libmaple/nvic.h>
+#include <libmaple/gpio.h>
+
+/* We include the series header below, after defining the register map
+ * and device structs. */
+
 /*
- * Register maps
+ * Register map
  */
 
 /** CAN register map type. */
@@ -126,9 +127,6 @@ typedef struct can_reg_map {
     __io uint32 F13R1;          /**< Filter bank 13 register 1 */
     __io uint32 F13R2;          /**< Filter bank 13 register 2 */
 } can_reg_map;
-
-/** CAN register map base pointer */
-#define CAN_BASE                       ((struct can_reg_map*)0x40006400)
 
 /*
  * Register bit definitions
@@ -695,7 +693,11 @@ static inline void can_leave_initialization(can_dev *dev) {
     return;
 }
 
-extern can_dev *CAN;
+/* Pull in the series header to get device-specific addresses and
+ * functionality.
+ */
+
+#include <series/can.h>
 
 #ifdef __cplusplus
 }

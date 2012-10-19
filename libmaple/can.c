@@ -25,12 +25,12 @@
  *****************************************************************************/
 
 /**
- * @file can.c
+ * @file libmaple/can.c
  * @author Devan Lai <devan.lai@gmail.com>
- * @brief Controller Area Network (CAN) support.
+ * @brief Controller Area Network (CAN) routines.
  */
 
-#include "can.h"
+#include <libmaple/can.h>
 
 
 /*
@@ -112,25 +112,6 @@ void can_detach_interrupt(can_dev *dev, can_interrupt_type interrupt_type) {
             return;
     }
 }
-
-void __irq_can_sce(void) {
-    if (can.enabled && can.sc_handler != NULL) {
-        (can.sc_handler)();
-    }
-}
-
-void __irq_usb_hp_can_tx(void) {
-    if (can.enabled && can.tx_handler != NULL) {
-        (can.tx_handler)();
-    }
-}
-
-void can_rx_irq_handler(void) {
-    if (can.rx_handler != NULL) {
-        (can.rx_handler)();
-    }
-}
-
 
 /**
  * @brief Reconfigure the CAN peripheral's MCR, IER, and BTR registers
