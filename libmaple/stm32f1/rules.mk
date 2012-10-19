@@ -15,7 +15,7 @@ sSRCS_$(d) := $(MCU_F1_LINE)/isrs.S
 sSRCS_$(d) += $(MCU_F1_LINE)/vector_table.S
 
 cSRCS_$(d) := adc.c
-cSRCS_$(d) := can.c
+cSRCS_$(d) += can.c
 cSRCS_$(d) += bkp.c
 cSRCS_$(d) += dma.c
 cSRCS_$(d) += exti.c
