@@ -35,6 +35,7 @@
 
 #include <libmaple/libmaple.h>
 #include <libmaple/rcc.h>
+#include <libmaple/can.h>
 
 /* Private headers */
 #include "usb_reg_map.h"
@@ -180,6 +181,10 @@ static void usb_resume(RESUME_STATE eResumeSetVal) {
 
 #define SUSPEND_ENABLED 1
 void __irq_usb_lp_can_rx0(void) {
+  if (CAN1->enabled) {
+    can_rx_irq_handler();
+    return;
+  }
   uint16 istr = USB_BASE->ISTR;
 
   /* Use USB_ISR_MSK to only include code for bits we care about. */

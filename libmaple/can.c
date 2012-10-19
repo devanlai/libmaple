@@ -69,6 +69,7 @@ void can_init(can_dev *dev) {
  * @brief Attaches an interrupt handler for the CAN peripheral
  *
  * Attaches an interrupt handler for the CAN peripheral.
+ * Note: for the RX handler, this must be called after disabling USB
  */
 void can_attach_interrupt(can_dev *dev, can_interrupt_type interrupt_type, void (*handler)(void)) {
     switch (interrupt_type) {
