@@ -200,7 +200,7 @@ extern const adc_dev *ADC3;
 
 /* Regular sequence register 1 */
 
-#define ADC_SQR1_L                      (0x1F << 20)
+#define ADC_SQR1_L                      (0xF  << 20)
 #define ADC_SQR1_SQ16                   (0x1F << 15)
 #define ADC_SQR1_SQ15                   (0x1F << 10)
 #define ADC_SQR1_SQ14                   (0x1F << 5)
@@ -340,6 +340,27 @@ static inline void adc_set_exttrig(const adc_dev *dev, uint8 enable) {
  */
 static inline void adc_enable(const adc_dev *dev) {
     *bb_perip(&dev->regs->CR2, ADC_CR2_ADON_BIT) = 1;
+}
+
+/**
+ * @brief Set DMA request generation for this device
+ * @param dev    ADC device
+ * @param enable If 1, DMA requests are generated after each conversion;
+ *               if 0, no DMA requests are generated.
+ */
+static inline void adc_set_dma(const adc_dev *dev, boolean enable) {
+    bb_peri_set_bit(&dev->regs->CR2, ADC_CR2_DMA_BIT, enable);
+}
+
+
+/**
+ * @brief Set scan mode for this device
+ * @param dev    ADC device
+ * @param enable If 1, the device scans a group of channels in sequence;
+                 if 0, the device does not use scan mode.
+ */
+static inline void adc_set_scan(const adc_dev *dev, boolean enable) {
+    bb_peri_set_bit(&dev->regs->CR1, ADC_CR1_SCAN_BIT, enable);
 }
 
 /**
