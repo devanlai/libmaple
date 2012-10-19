@@ -244,6 +244,7 @@ typedef struct adc_dev {
 void adc_init(const adc_dev *dev);
 void adc_set_extsel(const adc_dev *dev, adc_extsel_event event);
 void adc_set_sample_rate(const adc_dev *dev, adc_smp_rate smp_rate);
+void adc_set_conversion_group(const adc_dev *dev, uint8 channels[], uint8 num_channels);
 uint16 adc_read(const adc_dev *dev, uint8 channel);
 
 /**

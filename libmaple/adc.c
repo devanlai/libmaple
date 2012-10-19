@@ -89,6 +89,30 @@ void adc_set_sample_rate(const adc_dev *dev, adc_smp_rate smp_rate) {
 }
 
 /**
+ * @brief Configure the channels to be scanned in the conversion group
+ * @param dev          ADC device
+ * @param channels     array of ADC channels to be converted
+ * @param num_channels number of ADC channels to be converted
+ */
+void adc_set_conversion_group(const adc_dev *dev, uint8 channels[], uint8 num_channels) {
+    uint32 SQR1 = ((num_channels - 1) & 0xf) << 20;
+    uint32 SQR2 = 0;
+    uint32 SQR3 = 0;
+    uint8 i, j;
+    j = 0;
+    for (i=0; j < num_channels && i < SQR3_CHANNELS; i++, j++)
+        SQR3 |= (channels[j] & 0x1f) << (i * 5);
+    for (i=0; j < num_channels && i < SQR2_CHANNELS; i++, j++)
+        SQR2 |= (channels[j] & 0x1f) << (i * 5);
+    for (i=0; j < num_channels && i < SQR1_CHANNELS; i++, j++)
+        SQR1 |= (channels[j] & 0x1f) << (i * 5);
+    
+    dev->regs->SQR1 = SQR1;
+    dev->regs->SQR2 = SQR2;
+    dev->regs->SQR3 = SQR3;
+}
+
+/**
  * @brief Perform a single synchronous software triggered conversion on a
  *        channel.
  * @param dev ADC device to use for reading.
