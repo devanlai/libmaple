@@ -100,11 +100,11 @@ void adc_set_conversion_group(const adc_dev *dev, uint8 channels[], uint8 num_ch
     uint32 SQR3 = 0;
     uint8 i, j;
     j = 0;
-    for (i=0; j < num_channels && i < SQR3_CHANNELS; i++, j++)
+    for (i=0; j < num_channels && i < ADC_NUM_SQR3_CHANNELS; i++, j++)
         SQR3 |= (channels[j] & 0x1f) << (i * 5);
-    for (i=0; j < num_channels && i < SQR2_CHANNELS; i++, j++)
+    for (i=0; j < num_channels && i < ADC_NUM_SQR2_CHANNELS; i++, j++)
         SQR2 |= (channels[j] & 0x1f) << (i * 5);
-    for (i=0; j < num_channels && i < SQR1_CHANNELS; i++, j++)
+    for (i=0; j < num_channels && i < ADC_NUM_SQR1_CHANNELS; i++, j++)
         SQR1 |= (channels[j] & 0x1f) << (i * 5);
     
     dev->regs->SQR1 = SQR1;
