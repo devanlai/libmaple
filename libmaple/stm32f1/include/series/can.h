@@ -50,6 +50,12 @@ extern const struct can_dev *CAN1;
 /** STM32F1 CAN1 register map base pointer. */
 #define CAN_BASE                       ((struct can_reg_map*)0x40006400)
 
+/*
+ * Interrupt handlers
+ */
+void __irq_can_sce(void);
+void __irq_usb_hp_can_tx(void);
+void can_rx_irq_handler(void);
 
 #ifdef __cplusplus
 }

@@ -593,8 +593,6 @@ typedef enum {
  */
 
 void can_init(can_dev *dev);
-void can_tx_irq_handler(void);
-void can_rx_irq_handler(void);
 void can_attach_interrupt(can_dev *dev, can_interrupt_type interrupt_type, void (*handler)(void));
 void can_detach_interrupt(can_dev *dev, can_interrupt_type interrupt_type);
 
