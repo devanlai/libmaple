@@ -45,7 +45,6 @@ void can_init(can_dev* const dev) {
     rcc_reset_dev(dev->clk_id);
 }
 
-
 /**
  * @brief Attaches an interrupt handler for the CAN peripheral
  *
@@ -96,6 +95,18 @@ void can_detach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type)
 }
 
 /**
+ * @brief Configure AFIO on TX/RX pins to connect GPIO pins to the CAN controller.
+ * param dev      CAN peripheral to configure AFIO pins for (this is secretly ignored)
+ * param comm_dev GPIO port to configure AFIO on
+ * param tx_bit   bit position within the port for TX
+ * param rx_bit   bit position within the port for RX
+ */
+void can_config_gpios(can_dev* const dev, gpio_dev* comm_dev, uint8 tx_bit, uint8 rx_bit) {
+    gpio_set_mode(comm_dev, tx_bit, GPIO_AF_OUTPUT_PP);
+    gpio_set_mode(comm_dev, rx_bit, GPIO_INPUT_FLOATING);
+}
+
+/**
  * @brief Reconfigure the CAN peripheral's MCR, IER, and BTR registers
  *
  * Reconfigures the CAN peripheral's MCR, IER and BTR registers. This
@@ -103,15 +114,21 @@ void can_detach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type)
  * @param dev CAN peripheral to reconfigure
  */
 void can_reconfigure(can_dev* const dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config) {
-    can_leave_sleep(dev);
     can_enter_initialization(dev);
+    can_leave_sleep(dev);
     while (!can_is_initializing(dev))
         ;
-    dev->regs->MCR = mcr_config;
-    //dev->regs->IER = ier_config;
-    dev->regs->BTR = btr_config;
-    can_leave_initialization(dev);
-    while (can_is_initializing(dev))
+    //Preserve reserved/request bits when setting
+    //configuration bits
+    dev->regs->MCR &= ~CAN_MCR_CONFIG_MASK;
+    dev->regs->MCR |= (CAN_MCR_CONFIG_MASK & mcr_config);
+    //dev->regs->IER &= ~CAN_IER_CONFIG_MASK;
+    //dev->regs->IER |= (CAN_IER_CONFIG_MASK & ier_config);
+
+    dev->regs->BTR &= ~CAN_BTR_CONFIG_MASK;
+    dev->regs->BTR |= (CAN_BTR_CONFIG_MASK & btr_config);
+    //can_leave_initialization(dev);
+    //while (can_is_initializing(dev))
         ;
 
 }

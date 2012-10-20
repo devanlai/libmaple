@@ -44,11 +44,12 @@ typedef struct {
     uint8 tx;
 } can_pins;
 
+//TODO: Generalize to boards besides the Maple Mini
 static const can_pins board_can_pins[] __FLASH__ = {
     {23, 24},
 };
 
-static const can_pins* dev_to_can_pins(can_dev const *dev) {
+static const can_pins* dev_to_can_pins(can_dev* const dev) {
     switch (dev->clk_id) {
     case RCC_CAN: return board_can_pins;
     default:      return NULL;

@@ -156,6 +156,9 @@ typedef struct can_reg_map {
 #define CAN_MCR_SLEEP           BIT(CAN_MCR_SLEEP_BIT)
 #define CAN_MCR_INRQ            BIT(CAN_MCR_INRQ_BIT)
 
+#define CAN_MCR_CONFIG_MASK     (CAN_MCR_DBF | CAN_MCR_TTCM | CAN_MCR_ABOM | CAN_MCR_AWUM | CAN_MCR_NART | CAN_MCR_RFLM | CAN_MCR_TXFP)
+
+/* Master status register */
 #define CAN_MSR_RX_BIT          11
 #define CAN_MSR_SAMP_BIT        10
 #define CAN_MSR_RXM_BIT         9
@@ -294,6 +297,8 @@ typedef struct can_reg_map {
 #define CAN_IER_FMPIE0          BIT(CAN_IER_FMPIE0_BIT)
 #define CAN_IER_TMEIE           BIT(CAN_IER_TMEIE_BIT)
 
+#define CAN_IER_CONFIG_MASK     (CAN_IER_SLKIE | CAN_IER_WKUIE | CAN_IER_ERRIE | CAN_IER_LECIE | CAN_IER_BOFIE | CAN_IER_EPVIE | CAN_IER_EWGIE | CAN_IER_FOVIE1 | CAN_IER_FFIE1 | CAN_IER_FMPIE1 | CAN_IER_FOVIE0 | CAN_IER_FFIE0 | CAN_IER_FMPIE0 | CAN_IER_TMEIE)
+
 /* Error status register */
 
 #define CAN_ESR_BOFF_BIT        2
@@ -328,6 +333,8 @@ typedef struct can_reg_map {
 #define CAN_BTR_TS2             (0x7 << 20)
 #define CAN_BTR_TS1             (0x7 << 16)
 #define CAN_BTR_BRP             (0x3ff)
+
+#define CAN_BTR_CONFIG_MASK     (CAN_BTR_SILM | CAN_BTR_LBKM | CAN_BTR_SJW | CAN_BTR_TS2 | CAN_BTR_TS1 | CAN_BTR_BRP)
 
 /* TX mailbox identifier registers */
 
@@ -593,6 +600,7 @@ typedef enum {
  */
 
 void can_init(can_dev* const dev);
+static inline void can_reset(can_dev* const dev);
 void can_attach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type, void (*handler)(void));
 void can_detach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type);
 
@@ -606,10 +614,19 @@ static inline can_mailbox_reg_map* can_rx_mailbox_regs(can_dev* const dev, can_r
     return (can_mailbox_reg_map*)(ri0r + CAN_MAILBOX_NREGS * (mailbox - 1));
 }
 
-//static inline can_tx_mess
-
+void can_config_gpios(can_dev* const dev, gpio_dev* comm_dev, uint8 tx_bit, uint8 rx_bit);
 void can_reconfigure(can_dev* const dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config);
 uint8 can_tx_mailbox_free(can_dev* const dev, can_tx_mailbox mailbox);
+
+/**
+ * @brief Reset a CAN peripheral.
+ *
+ * Resets all CAN configuration bits to their reset values.
+ * @param dev CAN peripheral to reset
+ */
+static inline void can_reset(can_dev* const dev) {
+    bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_RESET_BIT, 1);
+}
 
 /**
  * @brief Returns true if the CAN peripheral is in sleep mode
