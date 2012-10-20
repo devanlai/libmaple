@@ -30,7 +30,8 @@
  * @brief Wirish CAN implementation.
  */
 
-#include "HardwareCAN.h"
+#include <wirish/HardwareCAN.h>
+
 /*
  * Constructor
  */
@@ -38,7 +39,7 @@
 HardwareCAN::HardwareCAN(uint32 canPortNumber) {
     switch (canPortNumber) {
     case 1:
-        this->can_d = CAN;
+        this->can_d = CAN1;
         break;
     default:
         ASSERT(0);

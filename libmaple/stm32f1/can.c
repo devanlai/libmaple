@@ -49,7 +49,7 @@ static can_dev can1 = {
     .enabled = 0
 };
 /** CAN1 device. */
-const can_dev *CAN1 = &can1;
+can_dev* const CAN1 = &can1;
 
 /*
  * Interrupt handlers.

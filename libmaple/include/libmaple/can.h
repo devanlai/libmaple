@@ -592,31 +592,31 @@ typedef enum {
  * CAN Convenience functions
  */
 
-void can_init(can_dev *dev);
-void can_attach_interrupt(can_dev *dev, can_interrupt_type interrupt_type, void (*handler)(void));
-void can_detach_interrupt(can_dev *dev, can_interrupt_type interrupt_type);
+void can_init(can_dev* const dev);
+void can_attach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type, void (*handler)(void));
+void can_detach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type);
 
-static inline can_mailbox_reg_map* can_tx_mailbox_regs(can_dev *dev, can_tx_mailbox mailbox) {
+static inline can_mailbox_reg_map* can_tx_mailbox_regs(can_dev* const dev, can_tx_mailbox mailbox) {
     __io uint32 *ti0r = &dev->regs->TI0R;
     return (can_mailbox_reg_map*)(ti0r + CAN_MAILBOX_NREGS * (mailbox - 1));
 }
 
-static inline can_mailbox_reg_map* can_rx_mailbox_regs(can_dev *dev, can_rx_mailbox mailbox) {
+static inline can_mailbox_reg_map* can_rx_mailbox_regs(can_dev* const dev, can_rx_mailbox mailbox) {
     __io uint32 *ri0r = &dev->regs->RI0R;
     return (can_mailbox_reg_map*)(ri0r + CAN_MAILBOX_NREGS * (mailbox - 1));
 }
 
 //static inline can_tx_mess
 
-void can_reconfigure(can_dev *dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config);
-uint8 can_tx_mailbox_free(can_dev *dev, can_tx_mailbox mailbox);
+void can_reconfigure(can_dev* const dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config);
+uint8 can_tx_mailbox_free(can_dev* const dev, can_tx_mailbox mailbox);
 
 /**
  * @brief Returns true if the CAN peripheral is in sleep mode
  * 
  * Returns true if the CAN peripheral is currently in sleep mode.
  */
-static inline uint8 can_is_asleep(can_dev *dev) {
+static inline uint8 can_is_asleep(can_dev* const dev) {
     return bb_peri_get_bit(&dev->regs->MSR, CAN_MSR_SLAK_BIT) != 0;
 }
 
@@ -625,7 +625,7 @@ static inline uint8 can_is_asleep(can_dev *dev) {
  * 
  * Returns true if the CAN peripheral is currently in initialization mode.
  */
-static inline uint8 can_is_initializing(can_dev *dev) {
+static inline uint8 can_is_initializing(can_dev* const dev) {
     return bb_peri_get_bit(&dev->regs->MSR, CAN_MSR_INAK_BIT) != 0;
 }
 
@@ -634,7 +634,7 @@ static inline uint8 can_is_initializing(can_dev *dev) {
  * 
  * Returns true if the CAN peripheral is currently in normal mode
  */
-static inline uint8 can_is_normal(can_dev *dev) {
+static inline uint8 can_is_normal(can_dev* const dev) {
     return (dev->regs->MSR & (CAN_MSR_SLAK | CAN_MSR_INAK)) == 0;
 }
 
@@ -647,7 +647,7 @@ static inline uint8 can_is_normal(can_dev *dev) {
  *
  * @param dev CAN peripheral to wake
  */
-static inline void can_leave_sleep(can_dev *dev) {
+static inline void can_leave_sleep(can_dev* const dev) {
     bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_SLEEP_BIT, 0);
 }
 
@@ -660,7 +660,7 @@ static inline void can_leave_sleep(can_dev *dev) {
  *
  * @param dev CAN peripheral to put to sleep
  */
-static inline void can_enter_sleep(can_dev *dev) {
+static inline void can_enter_sleep(can_dev* const dev) {
     bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_SLEEP_BIT, 1);
 }
 
@@ -674,7 +674,7 @@ static inline void can_enter_sleep(can_dev *dev) {
  *
  * @param dev CAN peripheral to prepare for configuration
  */
-static inline void can_enter_initialization(can_dev *dev) {
+static inline void can_enter_initialization(can_dev* const dev) {
     bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_INRQ_BIT, 1);
     return;
 }
@@ -686,7 +686,7 @@ static inline void can_enter_initialization(can_dev *dev) {
  * Note that messages can only be sent and received in normal mode.
  * @param dev CAN peripheral to leave initialization mode
  */
-static inline void can_leave_initialization(can_dev *dev) {
+static inline void can_leave_initialization(can_dev* const dev) {
     bb_peri_set_bit(&dev->regs->MCR, CAN_MCR_INRQ_BIT, 0);
     return;
 }

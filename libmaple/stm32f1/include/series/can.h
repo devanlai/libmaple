@@ -41,7 +41,7 @@ extern "C" {
  * Devices
  */
 
-extern const struct can_dev *CAN1;
+extern struct can_dev* const CAN1;
 
 /*
  * Register map base pointers

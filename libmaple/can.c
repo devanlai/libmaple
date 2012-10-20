@@ -32,25 +32,6 @@
 
 #include <libmaple/can.h>
 
-
-/*
- * CAN devices
- */
-
-static can_dev can = {
-    .regs = CAN_BASE,
-    .clk_id = RCC_CAN,
-    .tx_irq_num = NVIC_USB_HP_CAN_TX,
-    .rx_irq_num = NVIC_USB_LP_CAN_RX0,
-    .sc_irq_num = NVIC_CAN_SCE,
-    .tx_handler = NULL,
-    .rx_handler = NULL,
-    .sc_handler = NULL,
-    .enabled = 0
-};
-
-can_dev *CAN = &can;
-
 /**
  * @brief Initialize a CAN peripheral.
  *
@@ -59,7 +40,7 @@ can_dev *CAN = &can;
  *
  * @param dev CAN peripheral to initialize
  */
-void can_init(can_dev *dev) {
+void can_init(can_dev* const dev) {
     rcc_clk_enable(dev->clk_id);
     rcc_reset_dev(dev->clk_id);
 }
@@ -71,7 +52,7 @@ void can_init(can_dev *dev) {
  * Attaches an interrupt handler for the CAN peripheral.
  * Note: for the RX handler, this must be called after disabling USB
  */
-void can_attach_interrupt(can_dev *dev, can_interrupt_type interrupt_type, void (*handler)(void)) {
+void can_attach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type, void (*handler)(void)) {
     switch (interrupt_type) {
         case CAN_INT_TX:
             dev->tx_handler = handler;
@@ -95,7 +76,7 @@ void can_attach_interrupt(can_dev *dev, can_interrupt_type interrupt_type, void 
  *
  * Detaches an interrupt handler from the CAN peripheral.
  */
-void can_detach_interrupt(can_dev *dev, can_interrupt_type interrupt_type) {
+void can_detach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type) {
     switch (interrupt_type) {
         case CAN_INT_TX:
             dev->tx_handler = NULL;
@@ -121,7 +102,7 @@ void can_detach_interrupt(can_dev *dev, can_interrupt_type interrupt_type) {
  * will temporarily leave normal mode to reconfigure registers
  * @param dev CAN peripheral to reconfigure
  */
-void can_reconfigure(can_dev *dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config) {
+void can_reconfigure(can_dev* const dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config) {
     can_leave_sleep(dev);
     can_enter_initialization(dev);
     while (!can_is_initializing(dev))
@@ -135,7 +116,7 @@ void can_reconfigure(can_dev *dev, uint32 mcr_config, uint32 ier_config, uint32 
 
 }
 
-uint8 can_tx_mailbox_free(can_dev *dev, can_tx_mailbox mailbox) {
+uint8 can_tx_mailbox_free(can_dev* const dev, can_tx_mailbox mailbox) {
     switch (mailbox) {
         case CAN_TX_MAILBOX_1:
             return bb_peri_get_bit(&dev->regs->TSR, CAN_TSR_TME0_BIT) != 0;

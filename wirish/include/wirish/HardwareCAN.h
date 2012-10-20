@@ -25,19 +25,19 @@
  *****************************************************************************/
 
 /**
- * @file HardwareCAN.h
+ * @file wirish/include/wirish/HardwareCAN.h
  * @author Devan Lai <devan.lai@gmail.com>
  * @brief High-level CAN interface
  *
  */
 
-#ifndef _HARDWARECAN_H_
-#define _HARDWARECAN_H_
+#ifndef _WIRISH_HARDWARECAN_H_
+#define _WIRISH_HARDWARECAN_H_
 
-#include "libmaple_types.h"
-#include "can.h"
-#include "wirish.h"
-#include "boards.h"
+#include <libmaple/libmaple_types.h>
+#include <libmaple/can.h>
+#include <wirish/wirish.h>
+#include <wirish/boards.h>
 
 typedef struct {
     uint8 rx;
@@ -48,7 +48,7 @@ static const can_pins board_can_pins[] __FLASH__ = {
     {23, 24},
 };
 
-static const can_pins* dev_to_can_pins(can_dev *dev) {
+static const can_pins* dev_to_can_pins(can_dev const *dev) {
     switch (dev->clk_id) {
     case RCC_CAN: return board_can_pins;
     default:      return NULL;
@@ -134,7 +134,7 @@ public:
     uint8 txPin(void);
 
 private:
-    can_dev *can_d;
+    can_dev* can_d;
 };
 
 #endif
