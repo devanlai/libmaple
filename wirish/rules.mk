@@ -32,6 +32,7 @@ cppSRCS_$(d) += pwm.cpp
 ifeq ($(MCU_SERIES), stm32f1)
 cppSRCS_$(d) += usb_serial.cpp	# HACK: this is currently STM32F1 only.
 cppSRCS_$(d) += HardwareSPI.cpp	# FIXME: port to F2 and fix wirish.h
+cppSRCS_$(d) += HardwareCAN.cpp
 endif
 cppSRCS_$(d) += wirish_analog.cpp
 cppSRCS_$(d) +=	wirish_digital.cpp
