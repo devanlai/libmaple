@@ -46,7 +46,7 @@ typedef struct {
 
 //TODO: Generalize to boards besides the Maple Mini
 static const can_pins board_can_pins[] __FLASH__ = {
-    {23, 24},
+    {24, 23},
 };
 
 static const can_pins* dev_to_can_pins(can_dev* const dev) {
