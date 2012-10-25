@@ -103,7 +103,7 @@ void can_detach_interrupt(can_dev* const dev, can_interrupt_type interrupt_type)
  */
 void can_config_gpios(can_dev* const dev, gpio_dev* comm_dev, uint8 tx_bit, uint8 rx_bit) {
     gpio_set_mode(comm_dev, tx_bit, GPIO_AF_OUTPUT_PP);
-    gpio_set_mode(comm_dev, rx_bit, GPIO_INPUT_FLOATING);
+    gpio_set_mode(comm_dev, rx_bit, GPIO_INPUT_PU);
 }
 
 /**
@@ -114,8 +114,8 @@ void can_config_gpios(can_dev* const dev, gpio_dev* comm_dev, uint8 tx_bit, uint
  * @param dev CAN peripheral to reconfigure
  */
 void can_reconfigure(can_dev* const dev, uint32 mcr_config, uint32 ier_config, uint32 btr_config) {
-    can_enter_initialization(dev);
     can_leave_sleep(dev);
+    can_enter_initialization(dev);
     while (!can_is_initializing(dev))
         ;
     //Preserve reserved/request bits when setting
