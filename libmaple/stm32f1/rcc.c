@@ -145,6 +145,15 @@ void rcc_clk_enable(rcc_clk_id id) {
     rcc_do_clk_enable(enable_regs, id);
 }
 
+void rcc_clk_disable(rcc_clk_id id) {
+    static __io uint32* enable_regs[] = {
+        [APB1] = &RCC_BASE->APB1ENR,
+        [APB2] = &RCC_BASE->APB2ENR,
+        [AHB] = &RCC_BASE->AHBENR,
+    };
+    rcc_do_clk_disable(enable_regs, id);
+}
+
 void rcc_reset_dev(rcc_clk_id id) {
     static __io uint32* reset_regs[] = {
         [APB1] = &RCC_BASE->APB1RSTR,

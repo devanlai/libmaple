@@ -140,6 +140,12 @@ int rcc_is_clk_ready(rcc_clk clock);
 extern void rcc_clk_enable(rcc_clk_id id);
 
 /**
+ * @brief Turn off the clock line on a peripheral
+ * @param id Clock ID of the peripheral to turn off.
+ */
+extern void rcc_clk_disable(rcc_clk_id id);
+
+/**
  * @brief Reset a peripheral.
  *
  * Caution: not all rcc_clk_id values refer to a peripheral which can
